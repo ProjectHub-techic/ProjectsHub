@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ProjectHub</title>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background: #000;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 40%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 40%),
+        conic-gradient(from 180deg at 50% 50%, #0a0a0a 0deg, #050505 90deg, #0a0a0a 180deg, #000 270deg, #0a0a0a 360deg);
+      background-blend-mode: overlay, overlay, normal;
+      animation: rotate 40s linear infinite;
+      will-change: transform;
+      z-index: -1;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg { animation: none; }
+    }
+
+    /* Навигация */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 30px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 10;
+    }
+
+    .logo-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    .logo-desc {
+      color: rgba(255,255,255,0.4);
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+      max-width: 420px;
+    }
+
+    .menu {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      letter-spacing: 1px;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    .menu a:hover {
+      color: #fff;
+      text-shadow: 0 0 8px rgba(255,255,255,0.5);
+    }
+
+    section {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      padding-top: 100px;
+    }
+
+    section h2 {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 36px;
+      letter-spacing: 3px;
+      margin: 0 0 40px;
+      text-shadow: 0 0 15px rgba(255,255,255,0.3);
+      text-align: center;
+    }
+
+    /* Карточки главной */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 25px;
+      max-width: 1100px;
+      width: 90%;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 30px 25px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+      transition: transform 0.3s, background 0.3s, border-color 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .card .card-icon {
+      font-family: "Courier New", monospace;
+      color: #fff;
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .card .card-title {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .card .card-text {
+      color: rgba(255,255,255,0.5);
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Услуги */
+    .services-list {
+      list-style: none;
+      margin: 0;
+      padding: 30px 60px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .services-list li {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+      letter-spacing: 1px;
+      padding: 15px 0;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      transition: color 0.3s, transform 0.3s, text-shadow 0.3s;
+    }
+
+    .services-list li:hover {
+      color: #d4a0ff;
+      transform: translateX(10px);
+      text-shadow: 0 0 12px rgba(187,0,255,0.8);
+    }
+
+    .services-list li.clickable {
+      cursor: pointer;
+    }
+
+    .services-list li.clickable:hover {
+      color: #fff;
+      text-shadow: 0 0 12px rgba(255,255,255,0.8);
+    }
+
+    .services-list li:last-child {
+      border-bottom: none;
+    }
+
+    /* Карточки (проекты, блог, контакты) */
+    .item-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 40px 60px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .item-card .platform {
+      color: rgba(255,255,255,0.5);
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .item-card .username {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .item-card a.btn-link {
+      display: inline-block;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      letter-spacing: 1px;
+      text-decoration: none;
+      padding: 12px 30px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .item-card a.btn-link:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+      max-width: 900px;
+      width: 90%;
+    }
+
+    @media (max-width: 900px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 500px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Модальное окно */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      padding: 20px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-box {
+      position: relative;
+      max-width: 480px;
+      width: 100%;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 40px 35px;
+      backdrop-filter: blur(10px);
+    }
+    .modal-box h3 {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      letter-spacing: 1px;
+      margin: 0 0 16px;
+    }
+    .modal-box p {
+      color: rgba(255,255,255,0.7);
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0 0 8px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-price {
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo-block">
+      <div class="logo">ProjectHub</div>
+      <div class="logo-desc">Начинающий веб дизайнер, создатель сайтов и проектов, готовый взяться за любую работу и выполнить ее в кратчайшие сроки</div>
+    </div>
+    <ul class="menu">
+      <li><a href="#home">Главная</a></li>
+      <li><a href="#projects">Проекты</a></li>
+      <li><a href="#services">Услуги</a></li>
+      <li><a href="#blog">Блог</a></li>
+      <li><a href="#contacts">Контакты</a></li>
+    </ul>
+  </nav>
+
+  <div class="bg" aria-hidden="true"></div>
+
+  <section id="home">
+    <h2>Программирование</h2>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">&lt;/&gt;</div>
+        <div class="card-title">Веб-разработка</div>
+        <div class="card-text">Создание современных сайтов и веб-приложений под любые задачи</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">AI</div>
+        <div class="card-title">ИИ и автоматизация</div>
+        <div class="card-text">Интеграция искусственного интеллекта в проекты</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">→</div>
+        <div class="card-title">Лендинг</div>
+        <div class="card-text">Одностраничный сайт для быстрой конверсии и сбора лидов</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">✦</div>
+        <div class="card-title">Веб дизайн</div>
+        <div class="card-text">Планирование и оформление веб-сайтов, сочетание эстетики и функциональности</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2>Проекты</h2>
+    <div class="projects-grid">
+      <div class="item-card">
+        <div class="platform">Веб-проект</div>
+        <div class="username">HALİL USTA</div>
+        <a class="btn-link" href="https://TRsladosti.github.io/halil-usta/" target="_blank">Открыть проект</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <h2>Услуги</h2>
+    <ul class="services-list">
+      <li class="clickable" onclick="openModal('Лендинг', 'Что это: одностраничный сайт, цель которого максимально быстро привести пользователя к конкретному действию (конверсия). Цель лендинга: собрать лиды, записать на консультацию, заказать услугу или оформить заявку.', '8000 ₽')">Лендинг — 8000 ₽</li>
+      <li class="clickable" onclick="openModal('Создание сайтов', 'Что это: процесс разработки веб-ресурса — от идеи до публикации и поддержки в интернете. Зачем нужен сайт: онлайн-визитка, витрина услуг, сбор лидов, продажи, сервисы и взаимодействие с клиентами.', '8000–50000 ₽')">Создание сайтов — 8000–50000 ₽</li>
+      <li class="clickable" onclick="openModal('Работа с ИИ', 'Что это такое: использование алгоритмов, которые учатся на данных, чтобы выполнять задачи, требующие умных действий — понимать тексты, распознавать изображения, принимать решения, генерировать контент и т.д. Что умеет ИИ делать для вашего проекта: генерировать тексты, изображения и код, анализировать данные, автоматизировать рутинные процессы, помогать с принятием решений, персонализировать контент.', '2000–15000 ₽')">Работа с ИИ — 2000–15000 ₽</li>
+      <li class="clickable" onclick="openModal('Веб дизайн', 'Что это: процесс планирования и оформления веб-сайтов, сочетающий эстетику и функциональность.', '6000–25000 ₽')">Веб дизайн — 6000–25000 ₽</li>
+      <li class="clickable" onclick="openModal('Доработка сайта', 'Что это: набор работ по улучшению и поддержке уже запущенного сайта после релиза.', '500–12000 ₽')">Доработка сайта — 500–12000 ₽</li>
+    </ul>
+  </section>
+
+  <section id="blog">
+    <h2>Блог</h2>
+    <div class="item-card">
+      <div class="platform">Instagram</div>
+      <div class="username">@ryflowl</div>
+      <a class="btn-link" href="https://instagram.com/ryflowl" target="_blank">Перейти в Instagram</a>
+    </div>
+  </section>
+
+  <section id="contacts">
+    <h2>Контакты</h2>
+    <div class="item-card">
+      <div class="username">@liferoutine0</div>
+      <div class="platform"><a href="mailto:karleonecarlos@gmail.com">karleonecarlos@gmail.com</a></div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">&times;</button>
+      <h3 id="modalTitle"></h3>
+      <p id="modalText"></p>
+      <p id="modalPrice" class="modal-price"></p>
+    </div>
+  </div>
+
+  <script>
+    function openModal(title, text, price){
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalText').textContent = text;
+      document.getElementById('modalPrice').textContent = price || '';
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+    function closeModal(){
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>
